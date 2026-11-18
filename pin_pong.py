@@ -1,4 +1,5 @@
 from pygame import *
+from random import randint
 
 font.init()
 
@@ -76,9 +77,21 @@ class Ball(GameSprite):
             self.sp_y *= -1
 
         if sprite.collide_rect(ball, player1):
-            self.sp_x *= -1
+            #self.sp_x *= -1
+            self.sp_x = randint(1, 10)
+            t_or_f = self.sp_y > 0
+            if t_or_f == True:
+                self.sp_y = randint(1, 10)
+            else:
+                self.sp_y = randint(1, 10)
+                self.sp_y *= -1 
+            #self.sp_x *= -1
+            #self.sp_y = self.sp_x
         if sprite.collide_rect(ball, player2):
+            #self.sp_x *= -1
+            self.sp_x = randint(1, 10)
             self.sp_x *= -1
+            #self.sp_y = self.sp_x
 
         self.rect.x += self.sp_x
         self.rect.y += self.sp_y
@@ -144,9 +157,11 @@ while game:
             score_if = False
             if ballBool == 1:
                 failplayer = 1
+                ball.sp_x *= -1
                 score_oneplayer += 1
             elif ballBool == 2:
                 failplayer = 2
+                ball.sp_x *= -1
                 score_twoplayer += 1
     elif score_if == False:
         score_sum = str(score_oneplayer) + score_slash + str(score_twoplayer)
