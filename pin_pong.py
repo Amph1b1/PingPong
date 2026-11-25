@@ -107,6 +107,15 @@ class Ball(GameSprite):
         elif a == 1:
             self.rect.x += self.speed
             self.rect.y -= self.speed'''
+        
+def lentint(score):
+    score_cool = 0
+    if score == 0:
+        return 1
+    while score != 0:
+        score = score//10
+        score_cool += 1
+    return score_cool
             
 
 
@@ -143,6 +152,9 @@ failplayer = ''
 
 score_if = True
 
+rect = Rect(250, 10, 120, 70)
+color = (128, 128, 128)
+
 while game:
     window.blit(background, (0, 0))
     
@@ -151,6 +163,8 @@ while game:
         player1.reset()
         player2.update()
         player2.reset()
+        draw.rect(window, color, rect)
+        window.blit(score_text, (270, 20))
         ballBool = ball.update()
         ball.reset()
         if ballBool:
@@ -163,6 +177,10 @@ while game:
                 failplayer = 2
                 ball.sp_x *= -1
                 score_twoplayer += 1
+        if score_oneplayer == 5:
+            background = transform.scale(image.load('chocowhatsup.jpg'), which_hite)
+        sd = lentint(score_oneplayer) + lentint(score_twoplayer) 
+        rect = Rect(250, 10, 100+sd*10, 70)
     elif score_if == False:
         score_sum = str(score_oneplayer) + score_slash + str(score_twoplayer)
         score_text = font.render(score_sum, True, (0, 0, 0))
@@ -170,9 +188,9 @@ while game:
         ball.rect.y = 140
         score_if = True
 
+
     clock.tick(fps)
 
-    window.blit(score_text, (270, 140))
     
     display.update()
 
