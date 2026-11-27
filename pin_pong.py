@@ -2,6 +2,12 @@ from pygame import *
 from random import randint
 
 font.init()
+mixer.init()
+
+
+win = mixer.Sound('win.mp3')
+mixer.music.load('drel.mp3')
+mixer.music.play(-1)
 
 which_hite = (623, 415)
 
@@ -16,9 +22,14 @@ class GameSprite(sprite.Sprite): #создали класс родитель
         self.rect.y = y
         self.x = x
         self.y = y
+        self.image_x = image_x
+        self.image_y = image_y
 
     def reset(self):
         window.blit(self.image, (self.rect.x, self.rect.y))
+    
+    def resetimg(self, img):
+        self.image = transform.scale(image.load(img), (self.image_x,self.image_y))
 
 class Player(GameSprite):
     def __init__(self, player_image, image_x, image_y, x, y, player_speed, player_num):
@@ -49,6 +60,8 @@ class Player(GameSprite):
                 if self.rect.y >= 0:
                     self.rect.y -= self.speed
 
+speed_ball = 10
+
 class Ball(GameSprite):
     def __init__(self, player_image, image_x, image_y, x, y, player_speed, speed_x, speed_y):
         super().__init__(player_image, image_x, image_y, x, y, player_speed)
@@ -78,18 +91,18 @@ class Ball(GameSprite):
 
         if sprite.collide_rect(ball, player1):
             #self.sp_x *= -1
-            self.sp_x = randint(1, 10)
+            self.sp_x = randint(1, speed_ball)
             t_or_f = self.sp_y > 0
             if t_or_f == True:
-                self.sp_y = randint(1, 10)
+                self.sp_y = randint(1, speed_ball)
             else:
-                self.sp_y = randint(1, 10)
+                self.sp_y = randint(1, speed_ball)
                 self.sp_y *= -1 
             #self.sp_x *= -1
             #self.sp_y = self.sp_x
         if sprite.collide_rect(ball, player2):
             #self.sp_x *= -1
-            self.sp_x = randint(1, 10)
+            self.sp_x = randint(1, speed_ball)
             self.sp_x *= -1
             #self.sp_y = self.sp_x
 
@@ -117,8 +130,27 @@ def lentint(score):
         score_cool += 1
     return score_cool
             
-
-
+def trollcode():
+    global background, speed_ball, score_troll
+    word = 0
+    key_pressed = key.get_pressed()
+    if key_pressed[K_t] and key_pressed[K_r] and key_pressed[K_o] and key_pressed[K_l]:
+        score_troll += 1
+        word = 1
+        print(word)
+    else:
+        word = ''
+    
+    if word == 1:
+        background = transform.scale(image.load('troll.png'), which_hite)
+        player1.resetimg('troll.png')
+        player2.resetimg('troll.png')
+        ball.resetimg('trollpng.png')
+        display.set_caption('Тролл')
+        speed_ball = 50
+        
+        
+        
 window = display.set_mode(which_hite)
 display.set_caption('Пин Понг')
 
@@ -155,6 +187,10 @@ score_if = True
 rect = Rect(250, 10, 120, 70)
 color = (128, 128, 128)
 
+score_troll = 0
+
+
+
 while game:
     window.blit(background, (0, 0))
     
@@ -163,6 +199,7 @@ while game:
         player1.reset()
         player2.update()
         player2.reset()
+        trollcode()
         draw.rect(window, color, rect)
         window.blit(score_text, (270, 20))
         ballBool = ball.update()
@@ -170,17 +207,23 @@ while game:
         if ballBool:
             score_if = False
             if ballBool == 1:
+                win.play()
                 failplayer = 1
                 ball.sp_x *= -1
                 score_oneplayer += 1
             elif ballBool == 2:
+                win.play()
                 failplayer = 2
                 ball.sp_x *= -1
                 score_twoplayer += 1
         if score_oneplayer == 5:
-            background = transform.scale(image.load('chocowhatsup.jpg'), which_hite)
+            if score_troll == 0:
+                background = transform.scale(image.load('chocowhatsup.jpg'), which_hite)
+        if score_troll == 1:
+            mixer.music.load('laughtogg.ogg')
+            mixer.music.play(-1)
         sd = lentint(score_oneplayer) + lentint(score_twoplayer) 
-        rect = Rect(250, 10, 100+sd*10, 70)
+        rect = Rect(250, 10, 100+sd*18, 70)
     elif score_if == False:
         score_sum = str(score_oneplayer) + score_slash + str(score_twoplayer)
         score_text = font.render(score_sum, True, (0, 0, 0))
